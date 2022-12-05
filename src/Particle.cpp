@@ -15,7 +15,13 @@ Particle::Particle() {
 	radius = .1;
 	damping = .99;
 	mass = 1;
-	color = ofColor::aquamarine;
+	color = ofColor::aquamarine; //  This is the blue dot under the thruster. possibly make it same color as the exhaust OR as background? so we don't see it
+    
+    
+    //Rotation
+    //rotation = 10;
+    //"Add an additional integrator for rotation in "Y" ??
+    
 }
 
 void Particle::draw() {

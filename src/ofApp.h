@@ -85,12 +85,20 @@ class ofApp : public ofBaseApp{
     
     
         //Particles
-    ParticleEmitter exhaust; // this is the trail of particles when we go up
-    ParticleEmitter *explosion;
-    ParticleSystem *movement; //This is how we control the lander 
+        ParticleEmitter exhaust; // this is the trail of particles when we go up
+        ParticleEmitter *explosion;
+        ParticleSystem *movement; //This is how we control the lander
     
-
+        //camera
+        bool trackingCamera = false;
+        bool onBoardCamera = false; 
         
+        //Sounds
+        ofSoundPlayer thrusterSound;
+        ofSoundPlayer backgroundSound;
+        ofSoundPlayer explosionSound;
     
+        //Lighting
+        ofLight keyLight, fillLight, rimLight;
         
 };

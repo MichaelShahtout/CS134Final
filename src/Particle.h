@@ -21,7 +21,7 @@ public:
 	void    draw();
 	float   age();        // sec
 	ofColor color;
-    
+    float rotation; 
   
 };
 

@@ -103,25 +103,91 @@ void ofApp::setup(){
      explosion->setGroupSize(25);
      explosion->setLifespan(10);
      explosion->setOneShot(true);
-     explosion->setParticleRadius(2.5);
+     explosion->setParticleRadius(0.01);
      explosion->sys->addForce(new TurbulenceForce(glm::vec3(-300, -300, 0), glm::vec3(300, 300, 0)));
      explosion->setEmitterType(RadialEmitter);
      
+    
+    //add particle for movement. so basically the lander follows the particle for movement
+    Particle particle;
+    particle.lifespan = 9999999; // never dies! because we need this for movement
+    particle.position = ofVec3f(0,25,0); // this is the lander position. so just made it 25 above the starting point
+    particle.color = ofColor::black; 
+
+    
     //Movement
     movement = new ParticleSystem();
     movement->addForce(turbForce);
     movement->addForce(thruster); // thruster movement wasd-qe
-    
-    //add particle for movement. so basically the lander follows the particle for movement 
-    Particle particle;
-    particle.lifespan = 9999999; // never dies! because we need this for movement
-    particle.position = ofVec3f(0,25,0); // this is the lander position. so just made it 25 above the starting point
-
-
-    movement->add(particle);
+    movement->add(particle); // The particle is the driving force for the movement.
+    //add addtional interagtor for rotation in "Y"
     
     
+    
+    //Rotation?
+    
+    //Sound  - BLANK FOR NOW
+    /*
+    if(!backgroundSound.load("")){
+        cout << "Can't open background sound " << endl;
+        ofExit(0);
+    }
+     
+    if(!explosionSound.load("")){
+        cout << "Can't open explosion sound file" << endl;
+        ofExit(0);
+    }
+    if(!thrusterSound.load("")){
+        cout << "Can't open thruster sound file" << endl;
+        ofExit(0);
+    }
+     */
+    
+    //Lights -- this is just copy and paste from our lab 8. will change it once we see how the model fits lighting 
+    /*
+     ofEnableDepthTest();
+     ofEnableLighting();
 
+     // Setup 3 - Light System
+     //
+     keyLight.setup();
+     keyLight.enable();
+     keyLight.setAreaLight(1, 1);
+     keyLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+     keyLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+     keyLight.setSpecularColor(ofFloatColor(1, 1, 1));
+     
+     keyLight.rotate(45, ofVec3f(0, 1, 0));
+     keyLight.rotate(-45, ofVec3f(1, 0, 0));
+     keyLight.setPosition(5, 5, 5);
+
+     fillLight.setup();
+     fillLight.enable();
+     fillLight.setSpotlight();
+     fillLight.setScale(.05);
+     fillLight.setSpotlightCutOff(15);
+     fillLight.setAttenuation(2, .001, .001);
+     fillLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+     fillLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+     fillLight.setSpecularColor(ofFloatColor(1, 1, 1));
+     fillLight.rotate(-10, ofVec3f(1, 0, 0));
+     fillLight.rotate(-45, ofVec3f(0, 1, 0));
+     fillLight.setPosition(-5, 5, 5);
+
+     rimLight.setup();
+     rimLight.enable();
+     rimLight.setSpotlight();
+     rimLight.setScale(.05);
+     rimLight.setSpotlightCutOff(30);
+     rimLight.setAttenuation(.2, .001, .001);
+     rimLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+     rimLight.setDiffuseColor(ofFloatColor(1, 1, 1));
+     rimLight.setSpecularColor(ofFloatColor(1, 1, 1));
+     rimLight.rotate(180, ofVec3f(0, 1, 0));
+     rimLight.setPosition(0, 5, -7);
+     */
+     
+    
 }
  
 //--------------------------------------------------------------
@@ -133,12 +199,24 @@ void ofApp::update() {
     
     movement->update();
     
-    if(!(movement->particles.empty())){ // if we have no particles currently
-        cout << "Moved" << endl;
+    //Move the lander based on the particle ( if statement to make sure particle exists)
+    if(!(movement->particles.empty())){
+        //cout << "Moved" << endl;
         
         lander.setPosition(movement->particles[0].position.x, movement->particles[0].position.y, movement->particles[0].position.z);
     }
-     
+    //cameras
+    if(trackingCamera){
+        cam.setPosition(lander.getPosition().x + 25, lander.getPosition().y, lander.getPosition().z);
+        cam.lookAt(lander.getPosition());
+    }
+    
+    //Leaving blank for now till we find a cool pos with the model
+    if(onBoardCamera){
+
+    }
+    
+    
     
     
 	
@@ -341,30 +419,43 @@ void ofApp::keyPressed(int key) {
 		break;
     //3D space has 6 movements
     case 'w': // up
-        exhaust.start(); // going up will trigger the exhaust
-        thruster->setVelocity(ofVec3f(0,1,0));
+            //Play the sound
+            thrusterSound.setLoop(true);
+            thrusterSound.play();
+            exhaust.start(); // going up will trigger the exhaust
+            thruster->setVelocity(ofVec3f(0,2,0));
         break;
     case 'a': // left
-        thruster->setVelocity(ofVec3f(-1,0,0));
+        thruster->setVelocity(ofVec3f(-2,0,0));
         break;
     case 's': // down
-        thruster->setVelocity(ofVec3f(0,-1,0));
+        thruster->setVelocity(ofVec3f(0,-2,0));
         break;
     case 'd': // right
-        thruster->setVelocity(ofVec3f(1,0,0));
+        thruster->setVelocity(ofVec3f(2,0,0));
         break;
     case 'q': // forward
-        thruster->setVelocity(ofVec3f(0,0,1));
+        thruster->setVelocity(ofVec3f(0,0,2));
         break;
     case 'e': // backwards
-        thruster->setVelocity(ofVec3f(0,0,-1));
+        thruster->setVelocity(ofVec3f(0,0,-2));
         break;
             
     case '1': // camera position will be wherever the lander is
             cam.setPosition(lander.getPosition());
             break;
-    case '2': // different cam pos etc
-            break; 
+    case '2':
+            if (trackingCamera)
+                trackingCamera = false;
+            else
+                trackingCamera = true;
+            break;
+    case '3':
+            if (onBoardCamera)
+                onBoardCamera = false;
+            else
+                onBoardCamera = true;
+            break;
 	default:
 		break;
 	}
@@ -396,6 +487,7 @@ void ofApp::keyReleased(int key) {
 	case OF_KEY_SHIFT:
 		break;
     case 'w': // up
+            thrusterSound.stop();
         exhaust.start(); // going up will trigger the exhaust
         thruster->setVelocity(ofVec3f(0,0,0));
         break;
