@@ -91,7 +91,8 @@ class ofApp : public ofBaseApp{
     
         //camera
         bool trackingCamera = false;
-        bool onBoardCamera = false; 
+        bool onBoardCamera = false;
+        bool topCamera = false; 
         
         //Sounds
         ofSoundPlayer thrusterSound;

@@ -1,6 +1,6 @@
 
 //  Kevin M. Smith - CS 134 SJSU
-//added motion stuff, ex) damping/mass
+//added motion stuff, ex) damping/mass and discEmitter
 #include "ParticleEmitter.h"
 
 ParticleEmitter::ParticleEmitter() {
@@ -57,6 +57,7 @@ void ParticleEmitter::draw() {
             break;
         case SphereEmitter:
         case RadialEmitter:
+        case DiscEmitter:
             ofDrawSphere(position, radius/10);  // just draw a small sphere as a placeholder
             break;
         default:
@@ -129,6 +130,12 @@ void ParticleEmitter::spawn(float time) {
         particle.velocity = velocity;
         particle.position.set(position);
         break;
+    case DiscEmitter:
+            ofVec3f dir = ofVec3f(ofRandom(-1, 1), ofRandom(0, 0), ofRandom(-1, 1));
+            float speed = velocity.length();
+            particle.velocity = dir.getNormalized() * speed;
+            particle.position.set(position);
+            
     }
 
     // other particle attributes

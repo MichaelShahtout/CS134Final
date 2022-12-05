@@ -93,8 +93,9 @@ void ofApp::setup(){
     exhaust.setLifespan(1.5);
     exhaust.setVelocity(ofVec3f(0,2,0));
     exhaust.setOneShot(true);
-    exhaust.setParticleRadius(0.5); // prob make these particles smaller.
-    exhaust.setEmitterType(RadialEmitter);
+    exhaust.setParticleRadius(0.1);
+    //exhaust.setEmitterType(RadialEmitter);
+    exhaust.setEmitterType(DiscEmitter);
     //exhaust->setRate();
     
    
@@ -103,7 +104,7 @@ void ofApp::setup(){
      explosion->setGroupSize(25);
      explosion->setLifespan(10);
      explosion->setOneShot(true);
-     explosion->setParticleRadius(0.01);
+     explosion->setParticleRadius(1);
      explosion->sys->addForce(new TurbulenceForce(glm::vec3(-300, -300, 0), glm::vec3(300, 300, 0)));
      explosion->setEmitterType(RadialEmitter);
      
@@ -213,8 +214,14 @@ void ofApp::update() {
     
     //Leaving blank for now till we find a cool pos with the model
     if(onBoardCamera){
-
+        ;
     }
+    if(topCamera){
+        ;
+    }
+
+    
+    //Gravity needs to be an adjustable force 
     
     
     
@@ -456,6 +463,13 @@ void ofApp::keyPressed(int key) {
             else
                 onBoardCamera = true;
             break;
+    case '4':
+                if (topCamera)
+                    topCamera = false;
+                else
+                    topCamera = true;
+                break;
+    
 	default:
 		break;
 	}
