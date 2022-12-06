@@ -83,7 +83,7 @@ void ofApp::setup(){
     //Forces
     gravityForce = new GravityForce(ofVec3f(0,-10,0));
     radialForce = new ImpulseRadialForce(1000.0);
-    turbForce = new TurbulenceForce(ofVec3f(-1,0), ofVec3f(1,0)); // used for the movement
+    turbForce = new TurbulenceForce(ofVec3f(-2,0), ofVec3f(2,0)); // used for the movement
     radialForce->setHeight(10);
     thruster = new ThrusterForce();
     
@@ -117,8 +117,10 @@ void ofApp::setup(){
 
     
     //Movement
+    gravityForce = new GravityForce(ofVec3f(0,-0.1,0)); // change the gravity so its slowly falling down
     movement = new ParticleSystem();
     movement->addForce(turbForce);
+    movement->addForce(gravityForce);
     movement->addForce(thruster); // thruster movement wasd-qe
     movement->add(particle); // The particle is the driving force for the movement.
     //add addtional interagtor for rotation in "Y"
@@ -219,7 +221,14 @@ void ofApp::update() {
     if(topCamera){
         ;
     }
-
+    
+    //Rotation
+    if(bRotation){
+        float angle = 10;
+        int numRotation = lander.getNumRotations(); // we need this so we can add another rotation on top of the already applied rotation
+        lander.setRotation(numRotation,angle,0,1,0); // rotate along Y axis
+  
+    }
     
     //Gravity needs to be an adjustable force 
     
@@ -447,7 +456,9 @@ void ofApp::keyPressed(int key) {
     case 'e': // backwards
         thruster->setVelocity(ofVec3f(0,0,-2));
         break;
-            
+    case 'y': // Rotation
+            bRotation = true;
+            break;
     case '1': // camera position will be wherever the lander is
             cam.setPosition(lander.getPosition());
             break;
@@ -520,6 +531,8 @@ void ofApp::keyReleased(int key) {
     case 'e': // backwards
         thruster->setVelocity(ofVec3f(0,0,0));
         break;
+    case 'y':
+            bRotation = false;
 	default:
 		break;
 

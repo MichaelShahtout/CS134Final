@@ -21,7 +21,12 @@ public:
 	void    draw();
 	float   age();        // sec
 	ofColor color;
-    float rotation; 
+    float rotation;
+    
+    void integrateAngular(); // angular motion
+    float angularVelocity;
+    float angularAcceleration;
+    float angularForce; 
   
 };
 

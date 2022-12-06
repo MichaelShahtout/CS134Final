@@ -28,6 +28,7 @@ public:
 	void draw();
 	vector<Particle> particles;
 	vector<ParticleForce *> forces;
+    
 };
 
 

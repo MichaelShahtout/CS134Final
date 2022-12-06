@@ -101,5 +101,9 @@ class ofApp : public ofBaseApp{
     
         //Lighting
         ofLight keyLight, fillLight, rimLight;
+    
+        //Rotation
+    bool bRotation; 
+    
         
 };

@@ -17,10 +17,11 @@ Particle::Particle() {
 	mass = 1;
 	color = ofColor::aquamarine; //  This is the blue dot under the thruster. possibly make it same color as the exhaust OR as background? so we don't see it
     
+    //Angular motion
+    angularVelocity = 0.0f;
+    angularAcceleration = 0.0f;
+    angularForce = 0.0f;
     
-    //Rotation
-    //rotation = 10;
-    //"Add an additional integrator for rotation in "Y" ??
     
 }
 
@@ -64,6 +65,23 @@ void Particle::integrate() {
 	// clear forces on particle (they get re-added each step)
 	//
 	forces.set(0, 0, 0);
+}
+void Particle::integrateAngular() {
+    float dt;
+    if(ofGetFrameRate() < 1){
+        dt = 1.0 / 60;
+    }
+    else
+        dt = 1.0 / ofGetFrameRate();
+    
+    rotation += (angularVelocity * dt);
+    
+    float a = angularAcceleration;
+    a += (angularForce * (1.0 / mass));
+    angularVelocity += a * dt;
+    angularVelocity *= damping;
+    
+    angularForce = 0.0f;
 }
 
 //  return age in seconds
