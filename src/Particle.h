@@ -26,7 +26,7 @@ public:
     void integrateAngular(); // angular motion
     float angularVelocity;
     float angularAcceleration;
-    float angularForce; 
+    float angularForce;
   
 };
 

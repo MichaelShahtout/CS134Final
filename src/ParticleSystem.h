@@ -64,6 +64,7 @@ class ThrusterForce : public ParticleForce {
 public:
     ThrusterForce(){thruster = ofVec3f(0,0,0);} // start with 0 thrust force
     void updateForce(Particle *);
+    void addForce(ParticleForce );
     void add(ofVec3f movement) { thruster += movement; } // This is used to move the lander
     void setVelocity(ofVec3f velocity) { thruster = velocity;} // To set a thrust speed
 };

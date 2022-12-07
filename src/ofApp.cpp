@@ -110,11 +110,10 @@ void ofApp::setup(){
      
     
     //add particle for movement. so basically the lander follows the particle for movement
-    Particle particle;
     particle.lifespan = 9999999; // never dies! because we need this for movement
     particle.position = ofVec3f(0,25,0); // this is the lander position. so just made it 25 above the starting point
+    gravityRotation = new GravityForce( ofVec3f(0,10,0));
     particle.color = ofColor::black; 
-
     
     //Movement
     gravityForce = new GravityForce(ofVec3f(0,-0.1,0)); // change the gravity so its slowly falling down
@@ -224,7 +223,12 @@ void ofApp::update() {
     
     //Rotation
     if(bRotation){
-        float angle = 10;
+        //This is implemented via Forces, so the longer you hold it, the faster it spins! 
+        particle.angularForce = 10;
+        float angle = particle.rotation; // this is the rotation angle we will turn with
+        particle.integrateAngular(); // function for angular motion
+        //cout << ofRadToDeg(rotationHold) << endl; // used as a check
+        
         int numRotation = lander.getNumRotations(); // we need this so we can add another rotation on top of the already applied rotation
         lander.setRotation(numRotation,angle,0,1,0); // rotate along Y axis
   

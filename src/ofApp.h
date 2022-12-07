@@ -82,6 +82,7 @@ class ofApp : public ofBaseApp{
         GravityForce *gravityForce;
         ImpulseRadialForce *radialForce; // for the explosion
         TurbulenceForce *turbForce;
+    GravityForce *gravityRotation; 
     
     
         //Particles
@@ -103,7 +104,10 @@ class ofApp : public ofBaseApp{
         ofLight keyLight, fillLight, rimLight;
     
         //Rotation
-    bool bRotation; 
+    bool bRotation;
+    //add particle for movement. so basically the lander follows the particle for movement
+    Particle particle;
+    
     
         
 };

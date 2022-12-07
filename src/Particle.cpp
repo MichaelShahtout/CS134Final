@@ -66,6 +66,7 @@ void Particle::integrate() {
 	//
 	forces.set(0, 0, 0);
 }
+//This is used for the rotation of the lander on the Y-axis.
 void Particle::integrateAngular() {
     float dt;
     if(ofGetFrameRate() < 1){
@@ -76,12 +77,14 @@ void Particle::integrateAngular() {
     
     rotation += (angularVelocity * dt);
     
+    
     float a = angularAcceleration;
     a += (angularForce * (1.0 / mass));
     angularVelocity += a * dt;
     angularVelocity *= damping;
     
     angularForce = 0.0f;
+    
 }
 
 //  return age in seconds
