@@ -243,9 +243,12 @@ void ofApp::update() {
     }
     
     //Leaving blank for now till we find a cool pos with the model
+    
     if(onBoardCamera){
-        ;
+        cam.setPosition(lander.getPosition().x, lander.getPosition().y + 10 ,lander.getPosition().z+5);
+        cam.lookAt(lander.getPosition());
     }
+     
     if(topCamera){
         ;
     }
@@ -263,7 +266,11 @@ void ofApp::update() {
   
     }
     
-    //Gravity needs to be an adjustable force 
+    //Gravity needs to be an adjustable force
+    
+    //Check collision
+    // Octree::intersect(const Box &box, TreeNode & node, vector<Box> & boxListRtn)
+    //collision = octree.intersect(lander.getPosition()
     
     
     
@@ -304,7 +311,6 @@ void ofApp::draw() {
 				for (int i = 0; i < lander.getNumMeshes(); i++) {
 					ofPushMatrix();
 					ofMultMatrix(lander.getModelMatrix());
-					//ofRotate(-90, 1, 0, 0); // dont need this
 					Octree::drawBox(bboxList[i]);
 					ofPopMatrix();
 				}
@@ -522,7 +528,7 @@ void ofApp::keyPressed(int key) {
             else
                 trackingCamera = true;
             break;
-    case '3':
+    case '3': // have to click twice to release camera
             if (onBoardCamera)
                 onBoardCamera = false;
             else

@@ -71,6 +71,7 @@ class ofApp : public ofBaseApp{
 		bool bLanderLoaded;
 		bool bTerrainSelected;
 	
+    bool collision; // This cheecks if the lander collided with the terrain
 		ofVec3f selectedPoint;
 		ofVec3f intersectPoint;
 
