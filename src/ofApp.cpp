@@ -32,7 +32,19 @@ void ofApp::setup(){
 	cam.disableMouseInput();
 	ofEnableSmoothing();
 	ofEnableDepthTest();
-
+    
+    ofDisableArbTex(); // disable rectangular textures
+    //Load textures
+    if(!ofLoadImage(particleTex, "images/dot.png")) {
+        cout << "Particle Texture file: images/dots.png not found " << endl;
+        ofExit();
+    }
+    //Load the Shader
+#ifdef TARGET_OPENGLES
+    shader.load("shaders_gles/shader");
+#else
+    shader.load("shaders/shader");
+#endif
 	// setup rudimentary lighting 
 	//
 	initLightingAndMaterials();
@@ -60,6 +72,7 @@ void ofApp::setup(){
 	testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
     
     //Setup lander so we don't have to drag it in every time
+    
     if (lander.loadModel("geo/lander.obj")) {
         bLanderLoaded = true;
         lander.setScaleNormalization(false);
@@ -122,11 +135,8 @@ void ofApp::setup(){
     movement->addForce(gravityForce);
     movement->addForce(thruster); // thruster movement wasd-qe
     movement->add(particle); // The particle is the driving force for the movement.
-    //add addtional interagtor for rotation in "Y"
     
     
-    
-    //Rotation?
     
     //Sound  - BLANK FOR NOW
     /*
@@ -191,6 +201,25 @@ void ofApp::setup(){
      
     
 }
+
+// load vertex buffer in preparation for rendering
+//
+void ofApp::loadVbo() {
+    if (exhaust.sys->particles.size() < 1) return;
+
+    vector<ofVec3f> sizes;
+    vector<ofVec3f> points;
+    for (int i = 0; i < exhaust.sys->particles.size(); i++) {
+        points.push_back(exhaust.sys->particles[i].position);
+        sizes.push_back(ofVec3f(10)); // particle radius
+    }
+    // upload the data to the vbo
+    //
+    int total = (int)points.size();
+    vbo.clear();
+    vbo.setVertexData(&points[0], total, GL_STATIC_DRAW);
+    vbo.setNormalData(&sizes[0], total, GL_STATIC_DRAW);
+}
  
 //--------------------------------------------------------------
 // incrementally update scene (animation)
@@ -243,7 +272,7 @@ void ofApp::update() {
 }
 //--------------------------------------------------------------
 void ofApp::draw() {
-
+    loadVbo();
 	ofBackground(ofColor::black);
 
 	glDepthMask(false);
@@ -343,9 +372,30 @@ void ofApp::draw() {
 		ofDrawSphere(p, .02 * d.length());
 	}
 
-    exhaust.draw(); // draw then pop.
 	ofPopMatrix();
 	cam.end();
+    
+    glDepthMask(GL_FALSE);
+    ofSetColor(255,100,90);
+    //Makes everything glowy
+    ofEnableBlendMode(OF_BLENDMODE_ADD);
+    ofEnablePointSprites();
+    //Begin drawing in the camera
+    shader.begin();
+    cam.begin();
+    //Draw particle Emitter here
+    exhaust.draw(); // draw then pop.
+    particleTex.bind();
+    vbo.draw(GL_POINTS, 0, (int)exhaust.sys->particles.size());
+    particleTex.unbind();
+    //end drawing in the camera
+    cam.end();
+    shader.end();
+    ofDisablePointSprites();
+    ofDisableBlendMode();
+    ofEnableAlphaBlending();
+    //Set back depth mask
+    glDepthMask(GL_TRUE); 
     
     ofSetColor(ofColor::white);
     ofDrawBitmapString(ofToString(ofGetFrameRate())+"fps", 10,15); // top left
