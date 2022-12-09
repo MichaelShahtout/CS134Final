@@ -55,6 +55,8 @@ void ofApp::setup(){
 	// create sliders for testing
 	//
 	gui.setup();
+    //Altitude
+    gui.add(altitudeLabel.setup("Altitude", "25")); // start at 25 up
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
 	bHide = false;
 
@@ -200,6 +202,8 @@ void ofApp::setup(){
      */
      
     
+  
+    
 }
 
 // load vertex buffer in preparation for rendering
@@ -225,6 +229,10 @@ void ofApp::loadVbo() {
 // incrementally update scene (animation)
 //
 void ofApp::update() {
+    ofPoint check = ofPoint(lander.getPosition().x,lander.getPosition().y,lander.getPosition().z);
+    if(raySelectWithOctree(check)){
+        return;
+    }
     exhaust.update();
     exhaust.setPosition(lander.getPosition()); // exhaust follows lander
     
@@ -272,8 +280,7 @@ void ofApp::update() {
     // Octree::intersect(const Box &box, TreeNode & node, vector<Box> & boxListRtn)
     //collision = octree.intersect(lander.getPosition()
     
-    
-    
+        
     
 	
 }
@@ -283,7 +290,10 @@ void ofApp::draw() {
 	ofBackground(ofColor::black);
 
 	glDepthMask(false);
-	if (!bHide) gui.draw();
+    if (!bHide) {
+        altitudeLabel = ofToString(altitude);
+        gui.draw();
+    };
 	glDepthMask(true);
 
 	cam.begin();
@@ -405,7 +415,9 @@ void ofApp::draw() {
     
     ofSetColor(ofColor::white);
     ofDrawBitmapString(ofToString(ofGetFrameRate())+"fps", 10,15); // top left
-
+    
+    
+    ofDrawBitmapString("Altitude" + ofToString(altitude), ofGetWindowWidth() - 200, 30);
     
 }
 
@@ -649,12 +661,14 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
 	ofVec3f mouse(mouseX, mouseY);
-	ofVec3f rayPoint = cam.screenToWorld(mouse);
-	ofVec3f rayDir = rayPoint - cam.getPosition();
+	//ofVec3f rayPoint = cam.screenToWorld(mouse);
+    ofVec3f rayPoint = lander.getPosition();
+    ofVec3f rayDir = ofVec3f(0,1,0);
+	//ofVec3f rayDir = rayPoint - cam.getPosition();
 	rayDir.normalize();
 	Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
 		Vector3(rayDir.x, rayDir.y, rayDir.z));
-
+    
     float t1 = ofGetElapsedTimeMicros();
     //cout << "T1 " << t1 << endl;
     pointSelected = octree.intersect(ray, octree.root, selectedNode);
@@ -662,11 +676,37 @@ bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
     //cout << "T2 " << t2  << endl;
     //cout << "Time to Select: " << t2 - t1 << " microseconds" << endl; // THIS IS COMMENTED OUT FOR THE VIDEO.
 	if (pointSelected) {
+        
 		pointRet = octree.mesh.getVertex(selectedNode.points.at(0));
 	}
+    else{
+        altitude = rayPoint.y - rayDir.y;
+    }
     
 	return pointSelected;
 }
+/*
+bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
+    ofVec3f mouse(mouseX, mouseY);
+    ofVec3f rayPoint = cam.screenToWorld(mouse);
+    ofVec3f rayDir = rayPoint - cam.getPosition();
+    rayDir.normalize();
+    Ray ray = Ray(Vector3(rayPoint.x, rayPoint.y, rayPoint.z),
+        Vector3(rayDir.x, rayDir.y, rayDir.z));
+
+    float t1 = ofGetElapsedTimeMicros();
+    //cout << "T1 " << t1 << endl;
+    pointSelected = octree.intersect(ray, octree.root, selectedNode);
+    float t2 = ofGetElapsedTimeMicros();
+    //cout << "T2 " << t2  << endl;
+    //cout << "Time to Select: " << t2 - t1 << " microseconds" << endl; // THIS IS COMMENTED OUT FOR THE VIDEO.
+    if (pointSelected) {
+        pointRet = octree.mesh.getVertex(selectedNode.points.at(0));
+    }
+    
+    return pointSelected;
+}
+ */
 
 
 
