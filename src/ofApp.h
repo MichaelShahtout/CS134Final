@@ -12,79 +12,83 @@
 
 class ofApp : public ofBaseApp{
 
-	public:
-		void setup();
-		void update();
-		void draw();
+    public:
+        void setup();
+        void update();
+        void draw();
 
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent2(ofDragInfo dragInfo);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-		void drawAxis(ofVec3f);
-		void initLightingAndMaterials();
-		void savePicture();
-		void toggleWireframeMode();
-		void togglePointsDisplay();
-		void toggleSelectTerrain();
-		void setCameraTarget();
-		bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
-		bool raySelectWithOctree(ofVec3f &pointRet);
-		glm::vec3 getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
+        void keyPressed(int key);
+        void keyReleased(int key);
+        void mouseMoved(int x, int y );
+        void mouseDragged(int x, int y, int button);
+        void mousePressed(int x, int y, int button);
+        void mouseReleased(int x, int y, int button);
+        void mouseEntered(int x, int y);
+        void mouseExited(int x, int y);
+        void windowResized(int w, int h);
+        void dragEvent2(ofDragInfo dragInfo);
+        void dragEvent(ofDragInfo dragInfo);
+        void gotMessage(ofMessage msg);
+        void drawAxis(ofVec3f);
+        void initLightingAndMaterials();
+        void savePicture();
+        void toggleWireframeMode();
+        void togglePointsDisplay();
+        void toggleSelectTerrain();
+        void setCameraTarget();
+        bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
+        bool raySelectWithOctree(ofVec3f &pointRet);
+        glm::vec3 getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
     void loadVbo(); // shaders
 
-		ofEasyCam cam;
-		ofxAssimpModelLoader mars, lander;
-		ofLight light;
-		Box boundingBox, landerBounds;
-		Box testBox;
-		vector<Box> colBoxList;
-		bool bLanderSelected = false;
-		Octree octree;
-		TreeNode selectedNode;
-		glm::vec3 mouseDownPos, mouseLastPos;
-		bool bInDrag = false;
+        ofEasyCam cam;
+        ofxAssimpModelLoader mars, lander;
+        ofLight light;
+        Box boundingBox, landerBounds;
+        Box testBox;
+        vector<Box> colBoxList;
+        bool bLanderSelected = false;
+        Octree octree;
+        TreeNode selectedNode;
+        glm::vec3 mouseDownPos, mouseLastPos;
+        bool bInDrag = false;
+    
+        Box lander1Box;
+        Box lander2Box;
+        Box lander3Box;
 
 
-		ofxIntSlider numLevels;
-		ofxPanel gui;
+        ofxIntSlider numLevels;
+        ofxPanel gui;
 
-		bool bAltKeyDown;
-		bool bCtrlKeyDown;
-		bool bWireframe;
-		bool bDisplayPoints;
-		bool bPointSelected;
-		bool bHide;
-		bool pointSelected = false;
-		bool bDisplayLeafNodes = false;
-		bool bDisplayOctree = false;
-		bool bDisplayBBoxes = false;
-		
-		bool bLanderLoaded;
-		bool bTerrainSelected;
-	
+        bool bAltKeyDown;
+        bool bCtrlKeyDown;
+        bool bWireframe;
+        bool bDisplayPoints;
+        bool bPointSelected;
+        bool bHide;
+        bool pointSelected = false;
+        bool bDisplayLeafNodes = false;
+        bool bDisplayOctree = false;
+        bool bDisplayBBoxes = false;
+        
+        bool bLanderLoaded;
+        bool bTerrainSelected;
+    
     bool collision; // This cheecks if the lander collided with the terrain
-		ofVec3f selectedPoint;
-		ofVec3f intersectPoint;
+        ofVec3f selectedPoint;
+        ofVec3f intersectPoint;
 
-		vector<Box> bboxList;
+        vector<Box> bboxList;
 
-		const float selectionRange = 4.0;
+        const float selectionRange = 4.0;
     
         //Forces
         ThrusterForce *thruster; // movement force for the lander
         GravityForce *gravityForce;
         ImpulseRadialForce *radialForce; // for the explosion
         TurbulenceForce *turbForce;
-    GravityForce *gravityRotation; 
+    GravityForce *gravityRotation;
     
     
         //Particles
@@ -95,7 +99,7 @@ class ofApp : public ofBaseApp{
         //camera
         bool trackingCamera = false;
         bool onBoardCamera = false;
-        bool topCamera = false; 
+        bool topCamera = false;
         
         //Sounds
         ofSoundPlayer thrusterSound;
@@ -114,10 +118,10 @@ class ofApp : public ofBaseApp{
     ofVbo vbo;
     ofShader shader;
     //Textures
-    ofTexture particleTex; 
+    ofTexture particleTex;
     
     float altitude;
-    bool bAltitude = true; // to toggle on and off the altitude meter 
+    bool bAltitude = true; // to toggle on and off the altitude meter
     
         
 };
