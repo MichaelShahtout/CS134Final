@@ -56,7 +56,6 @@ void ofApp::setup(){
 	//
 	gui.setup();
     //Altitude
-    gui.add(altitudeLabel.setup("Altitude", "25")); // start at 25 up
 	gui.add(numLevels.setup("Number of Octree Levels", 1, 1, 10));
 	bHide = false;
 
@@ -229,10 +228,12 @@ void ofApp::loadVbo() {
 // incrementally update scene (animation)
 //
 void ofApp::update() {
+    
     ofPoint check = ofPoint(lander.getPosition().x,lander.getPosition().y,lander.getPosition().z);
-    if(raySelectWithOctree(check)){
+    if(raySelectWithOctree(check)){ // it actually never enters this loop, just need the function
         return;
     }
+    
     exhaust.update();
     exhaust.setPosition(lander.getPosition()); // exhaust follows lander
     
@@ -291,7 +292,6 @@ void ofApp::draw() {
 
 	glDepthMask(false);
     if (!bHide) {
-        altitudeLabel = ofToString(altitude);
         gui.draw();
     };
 	glDepthMask(true);
@@ -416,8 +416,8 @@ void ofApp::draw() {
     ofSetColor(ofColor::white);
     ofDrawBitmapString(ofToString(ofGetFrameRate())+"fps", 10,15); // top left
     
-    
-    ofDrawBitmapString("Altitude" + ofToString(altitude), ofGetWindowWidth() - 200, 30);
+    if(bAltitude)
+        ofDrawBitmapString("Altitude " + ofToString(altitude), ofGetWindowWidth() - 200, 30);
     
 }
 
@@ -465,7 +465,8 @@ void ofApp::keyPressed(int key) {
 		ofToggleFullscreen();
 		break;
 	case 'H':
-	case 'h':
+	case 'h': // Altitude key.
+            bAltitude = !bAltitude;
 		break;
 	case 'L':
 	case 'l':

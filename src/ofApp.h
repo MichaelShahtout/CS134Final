@@ -117,7 +117,7 @@ class ofApp : public ofBaseApp{
     ofTexture particleTex; 
     
     float altitude;
-    ofxLabel altitudeLabel; // because we need to see the altitude on the screen 
+    bool bAltitude = true; // to toggle on and off the altitude meter 
     
         
 };
