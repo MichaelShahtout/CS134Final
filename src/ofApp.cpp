@@ -99,7 +99,7 @@ void ofApp::setup(){
     }
     
     //Forces
-    gravityForce = new GravityForce(ofVec3f(0,-10,0));
+    gravityForce = new GravityForce(ofVec3f(0,-200,0));
     radialForce = new ImpulseRadialForce(1000.0);
     turbForce = new TurbulenceForce(ofVec3f(-2,0), ofVec3f(2,0)); // used for the movement
     radialForce->setHeight(10);
@@ -109,7 +109,7 @@ void ofApp::setup(){
    // exhaust.sys->addForce(new GravityForce(ofVec3f(0,-10,0)));
     exhaust.setGroupSize(25);
     exhaust.setLifespan(1.5);
-    exhaust.setVelocity(ofVec3f(0,2,0));
+    exhaust.setVelocity(ofVec3f(0,5,0));
     exhaust.setOneShot(true);
     exhaust.setParticleRadius(0.1);
     //exhaust.setEmitterType(RadialEmitter);
@@ -238,6 +238,17 @@ void ofApp::update() {
     
     exhaust.update();
     exhaust.setPosition(lander.getPosition()); // exhaust follows lander
+    
+    if (bUsingFuel) {
+        fuelLeft -= 0.1;
+        
+        if (fuelLeft <= 0) {
+            thrusterSound.stop();
+            thruster->setVelocity(ofVec3f(0, 0, 0));
+            exhaust.stop();
+            bUsingFuel = false;
+        }
+    }
     
     movement->update();
     
@@ -527,26 +538,29 @@ void ofApp::keyPressed(int key) {
         break;
     //3D space has 6 movements
     case 'w': // up
-            //Play the sound
-            thrusterSound.setLoop(true);
-            thrusterSound.play();
-            exhaust.start(); // going up will trigger the exhaust
-            thruster->setVelocity(ofVec3f(0,2,0));
+            if (fuelLeft > 0) {
+                //Play the sound
+                thrusterSound.setLoop(true);
+                thrusterSound.play();
+                exhaust.start(); // going up will trigger the exhaust
+                thruster->setVelocity(ofVec3f(0,maxVelocity,0));
+                bUsingFuel = true;
+            }
         break;
     case 'a': // left
-        thruster->setVelocity(ofVec3f(-2,0,0));
+        thruster->setVelocity(ofVec3f(-maxVelocity,0,0));
         break;
     case 's': // down
-        thruster->setVelocity(ofVec3f(0,-2,0));
+        thruster->setVelocity(ofVec3f(0,-maxVelocity,0));
         break;
     case 'd': // right
-        thruster->setVelocity(ofVec3f(2,0,0));
+        thruster->setVelocity(ofVec3f(maxVelocity,0,0));
         break;
     case 'q': // forward
-        thruster->setVelocity(ofVec3f(0,0,2));
+        thruster->setVelocity(ofVec3f(0,0,maxVelocity));
         break;
     case 'e': // backwards
-        thruster->setVelocity(ofVec3f(0,0,-2));
+        thruster->setVelocity(ofVec3f(0,0,-maxVelocity));
         break;
     case 'y': // Rotation
             bRotation = true;
@@ -604,9 +618,10 @@ void ofApp::keyReleased(int key) {
     case OF_KEY_SHIFT:
         break;
     case 'w': // up
-            thrusterSound.stop();
-        exhaust.start(); // going up will trigger the exhaust
+        thrusterSound.stop();
+        exhaust.stop(); // going up will trigger the exhaust
         thruster->setVelocity(ofVec3f(0,0,0));
+        bUsingFuel = false;
         break;
     case 'a': // left
         thruster->setVelocity(ofVec3f(0,0,0));
