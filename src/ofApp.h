@@ -39,7 +39,7 @@ class ofApp : public ofBaseApp{
         bool mouseIntersectPlane(ofVec3f planePoint, ofVec3f planeNorm, ofVec3f &point);
         bool raySelectWithOctree(ofVec3f &pointRet);
         glm::vec3 getMousePointOnPlane(glm::vec3 p , glm::vec3 n);
-    void loadVbo(); // shaders
+        void loadVbo(); // shaders
 
         ofEasyCam cam;
         ofxAssimpModelLoader mars, lander;
@@ -75,7 +75,7 @@ class ofApp : public ofBaseApp{
         bool bLanderLoaded;
         bool bTerrainSelected;
     
-    bool collision; // This cheecks if the lander collided with the terrain
+        bool collision; // This cheecks if the lander collided with the terrain
         ofVec3f selectedPoint;
         ofVec3f intersectPoint;
 
@@ -120,8 +120,12 @@ class ofApp : public ofBaseApp{
     //Textures
     ofTexture particleTex;
     
+    float maxFuel = 100;
+    float fuelLeft = maxFuel;
     float altitude;
     bool bAltitude = true; // to toggle on and off the altitude meter
+    bool bUsingFuel = false;
+    float maxVelocity = 300;
     
         
 };
