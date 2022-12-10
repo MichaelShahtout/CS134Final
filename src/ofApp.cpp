@@ -48,8 +48,14 @@ void ofApp::setup(){
     // setup rudimentary lighting
     //
     initLightingAndMaterials();
-
-    mars.loadModel("geo/TestLandscape.obj");
+    
+    if(!(background.load("images/space.png"))){
+        cout << "Cannot load the spaces.png, the background" << endl;
+    }
+    
+    if(!(mars.loadModel("geo/TestLandscape.obj"))){
+        cout << "Cannot load the landscape model. geo/TestLandscape.obj" << endl;
+    }
     mars.setScaleNormalization(false);
     
     lander1Box = Octree::meshBounds(mars.getMesh("Cube.001_Material.002"));
@@ -78,7 +84,7 @@ void ofApp::setup(){
     
     //Setup lander so we don't have to drag it in every time
     
-    if (lander.loadModel("geo/lander.obj")) {
+    if (lander.loadModel("geo/FinalLander.obj")) {
         bLanderLoaded = true;
         lander.setScaleNormalization(false);
         lander.setPosition(0, 25, 0); // just made the lander 25 pixels in the air.
@@ -118,13 +124,13 @@ void ofApp::setup(){
     
    
     //explosion. haven't tested this yet, just basic idea
-     explosion = new ParticleEmitter();
-     explosion->setGroupSize(25);
-     explosion->setLifespan(10);
-     explosion->setOneShot(true);
-     explosion->setParticleRadius(1);
-     explosion->sys->addForce(new TurbulenceForce(glm::vec3(-300, -300, 0), glm::vec3(300, 300, 0)));
-     explosion->setEmitterType(RadialEmitter);
+    explosion = new ParticleEmitter();
+    explosion->setGroupSize(25);
+    explosion->setLifespan(5);
+    explosion->setOneShot(true);
+    explosion->setParticleRadius(2.5);
+    explosion->sys->addForce(new TurbulenceForce(glm::vec3(-300, -300, 0), glm::vec3(300, 300, 0)));
+    explosion->setEmitterType(RadialEmitter);
      
     
     //add particle for movement. so basically the lander follows the particle for movement
@@ -142,21 +148,21 @@ void ofApp::setup(){
     movement->add(particle); // The particle is the driving force for the movement.
     
     //Sound  - BLANK FOR NOW
-    /*
-    if(!backgroundSound.load("")){
+    
+    if(!backgroundSound.load("sounds/background.mp3")){
         cout << "Can't open background sound " << endl;
         ofExit(0);
     }
-     
-    if(!explosionSound.load("")){
-        cout << "Can't open explosion sound file" << endl;
-        ofExit(0);
-    }
-    if(!thrusterSound.load("")){
+    
+    if(!thrusterSound.load("sounds/thrust.mp3")){
         cout << "Can't open thruster sound file" << endl;
         ofExit(0);
     }
-     */
+    backgroundSound.setLoop(true);
+    backgroundSound.setVolume(0.1);
+    backgroundSound.play();
+    thrusterSound.setVolume(5);
+     
     
     //Lights -- this is just copy and paste from our lab 8. will change it once we see how the model fits lighting
     /*
@@ -202,6 +208,7 @@ void ofApp::setup(){
      rimLight.setPosition(0, 5, -7);
      */
      
+    
     
   
     
@@ -299,6 +306,11 @@ void ofApp::update() {
     Box collisionBounds = Box(Vector3(min.x, min.y, min.z), Vector3(max.x, max.y, max.z));
     if (octree.intersect(collisionBounds, octree.root, colBoxList)){
         cout << "Collide with base mesh" << endl;
+        bExplosion = true;
+        explosion->setPosition(lander.getPosition());
+        explosion->sys->reset();
+        explosion->start();
+        
     }
     else {
         if (collisionBounds.overlap(lander1Box)) {
@@ -312,16 +324,18 @@ void ofApp::update() {
         }
     }
     
-        
+    explosion->update();
     
     
 }
 //--------------------------------------------------------------
 void ofApp::draw() {
     loadVbo();
-    ofBackground(ofColor::black);
 
     glDepthMask(false);
+    ofSetColor(ofColor::white);
+    background.draw(0,0, ofGetScreenWidth(), ofGetScreenHeight());
+
     if (!bHide) {
         gui.draw();
     };
@@ -436,6 +450,12 @@ void ofApp::draw() {
     vbo.draw(GL_POINTS, 0, (int)exhaust.sys->particles.size());
     particleTex.unbind();
     //end drawing in the camera
+    if(bExplosion){
+        explosion->draw();
+        //particleTex.bind();
+        //vbo.draw(GL_POINTS, 0, (int)explosion->sys->particles.size());
+       // particleTex.unbind();
+    }
     cam.end();
     shader.end();
     ofDisablePointSprites();

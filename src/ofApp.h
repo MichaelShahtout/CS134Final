@@ -74,6 +74,7 @@ class ofApp : public ofBaseApp{
         
         bool bLanderLoaded;
         bool bTerrainSelected;
+    bool bExplosion = false; // If lander touches ground, explodes. 
     
         bool collision; // This cheecks if the lander collided with the terrain
         ofVec3f selectedPoint;
@@ -104,7 +105,9 @@ class ofApp : public ofBaseApp{
         //Sounds
         ofSoundPlayer thrusterSound;
         ofSoundPlayer backgroundSound;
-        ofSoundPlayer explosionSound;
+    
+        //Background
+    ofImage background;
     
         //Lighting
         ofLight keyLight, fillLight, rimLight;
@@ -125,7 +128,7 @@ class ofApp : public ofBaseApp{
     float altitude;
     bool bAltitude = true; // to toggle on and off the altitude meter
     bool bUsingFuel = false;
-    float maxVelocity = 300;
+    float maxVelocity = 500;
     
         
 };
