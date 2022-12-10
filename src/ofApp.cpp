@@ -53,14 +53,18 @@ void ofApp::setup(){
         cout << "Cannot load the spaces.png, the background" << endl;
     }
     
-    if(!(mars.loadModel("geo/TestLandscape.obj"))){
-        cout << "Cannot load the landscape model. geo/TestLandscape.obj" << endl;
+    //if(!(mars.loadModel("geo/TestLandscape.obj"))){
+    //if(!(mars.loadModel("geo/LandingArea.fbx"))){
+    if(!(mars.loadModel("geo/landing.obj"))){
+        cout << "Cannot load the landscape model." << endl;
     }
     mars.setScaleNormalization(false);
-    
-    lander1Box = Octree::meshBounds(mars.getMesh("Cube.001_Material.002"));
-    lander2Box = Octree::meshBounds(mars.getMesh("Cube.002_Material.004"));
-    lander3Box = Octree::meshBounds(mars.getMesh("Cube.003_Material.001"));
+    for(int i = 0; i < mars.getMeshNames().size(); i++){
+        cout << mars.getMeshNames()[i] << endl;
+    }
+    lander1Box = Octree::meshBounds(mars.getMesh("Cube.001"));
+    lander2Box = Octree::meshBounds(mars.getMesh("Cube.002"));
+    lander3Box = Octree::meshBounds(mars.getMesh("Cube.003"));
 
     // create sliders for testing
     //
@@ -74,11 +78,11 @@ void ofApp::setup(){
     
     
     float t1 = ofGetElapsedTimeMillis(); // Start time
-    octree.create(mars.getMesh("landscape_GrassMaterial"), 20);
+    octree.create(mars.getMesh("landscape"), 20);
     float t2 = ofGetElapsedTimeMillis(); // End time
     //cout << "Time to Create Octree: " << t2 - t1 << " millisec" << endl; // subtracted time is the creation time
     
-    cout << "Number of Verts: " << mars.getMesh("landscape_GrassMaterial").getNumVertices() << endl;
+    //cout << "Number of Verts: " << mars.getMesh("landscape.001").getNumVertices() << endl;
 
     testBox = Box(Vector3(3, 3, 0), Vector3(5, 5, 2));
     
@@ -164,54 +168,37 @@ void ofApp::setup(){
     thrusterSound.setVolume(5);
      
     
-    //Lights -- this is just copy and paste from our lab 8. will change it once we see how the model fits lighting
-    /*
-     ofEnableDepthTest();
-     ofEnableLighting();
-
-     // Setup 3 - Light System
-     //
-     keyLight.setup();
-     keyLight.enable();
-     keyLight.setAreaLight(1, 1);
-     keyLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
-     keyLight.setDiffuseColor(ofFloatColor(1, 1, 1));
-     keyLight.setSpecularColor(ofFloatColor(1, 1, 1));
-     
-     keyLight.rotate(45, ofVec3f(0, 1, 0));
-     keyLight.rotate(-45, ofVec3f(1, 0, 0));
-     keyLight.setPosition(5, 5, 5);
-
-     fillLight.setup();
-     fillLight.enable();
-     fillLight.setSpotlight();
-     fillLight.setScale(.05);
-     fillLight.setSpotlightCutOff(15);
-     fillLight.setAttenuation(2, .001, .001);
-     fillLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
-     fillLight.setDiffuseColor(ofFloatColor(1, 1, 1));
-     fillLight.setSpecularColor(ofFloatColor(1, 1, 1));
-     fillLight.rotate(-10, ofVec3f(1, 0, 0));
-     fillLight.rotate(-45, ofVec3f(0, 1, 0));
-     fillLight.setPosition(-5, 5, 5);
-
-     rimLight.setup();
-     rimLight.enable();
-     rimLight.setSpotlight();
-     rimLight.setScale(.05);
-     rimLight.setSpotlightCutOff(30);
-     rimLight.setAttenuation(.2, .001, .001);
-     rimLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
-     rimLight.setDiffuseColor(ofFloatColor(1, 1, 1));
-     rimLight.setSpecularColor(ofFloatColor(1, 1, 1));
-     rimLight.rotate(180, ofVec3f(0, 1, 0));
-     rimLight.setPosition(0, 5, -7);
-     */
-     
+    ofEnableDepthTest();
+    ofEnableLighting();
+    // Lander Light
+    landerLight.setSpotlight();
+    landerLight.setSpotlightCutOff(15);
+    landerLight.setAttenuation(2, .001, .001);
+    landerLight.rotate(270, ofVec3f(1, 0, 0)); // so the top (point) is at the lander.
+    landerLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+    landerLight.setDiffuseColor(ofFloatColor(0.00001, 0.00001, 0.00001));
+    landerLight.setSpecularColor(ofFloatColor(0.01, 0.01, 0.01));
     
     
-  
+    //backLight - gives the terrain a light cyan color
+    backLight.setup();
+    backLight.enable();
+    backLight.setDirectional();
+    backLight.setAreaLight(1100,1100);
+    backLight.setPosition((ofVec3f(650,200,650)));
+    backLight.rotate(90,ofVec3f(1,0,0));
+    backLight.setSpotlightCutOff(1550);
+    backLight.setDiffuseColor(ofColor::lightCyan);
     
+    //This gives the purple effects to the terrain
+    effectLight.setup();
+    effectLight.enable();
+    effectLight.setAreaLight(2000, 2000);
+    effectLight.setAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
+    effectLight.setDiffuseColor(ofColor::purple);
+    effectLight.setSpecularColor(ofFloatColor(1, 1, 1));
+    
+
 }
 
 // load vertex buffer in preparation for rendering
@@ -279,7 +266,8 @@ void ofApp::update() {
     }
      
     if(topCamera){
-        ;
+        cam.setPosition(lander.getPosition().x,lander.getPosition().y + 100, lander.getPosition().z);
+        cam.lookAt(lander.getPosition());
     }
     
     //Rotation
@@ -325,6 +313,8 @@ void ofApp::update() {
     }
     
     explosion->update();
+    //fillLight.setDirectional();
+    landerLight.setPosition(lander.getPosition().x,lander.getPosition().y - altitude ,lander.getPosition().z);
     
     
 }
@@ -340,9 +330,19 @@ void ofApp::draw() {
         gui.draw();
     };
     glDepthMask(true);
-
+    ofEnableDepthTest();
+    //
+    //fillLight.enable();
+    //landerLight.enable();
+    //fillLight.draw();
     cam.begin();
     ofPushMatrix();
+    if(blanderLight){
+        ofSetColor(ofColor::pink);
+        //landerLight.enable(); // no
+        landerLight.draw();
+    }
+    //landerLight.enable();
     if (bWireframe) {                    // wireframe mode  (include axis)
         ofDisableLighting();
         ofSetColor(ofColor::slateGray);
@@ -437,7 +437,8 @@ void ofApp::draw() {
 
     ofPopMatrix();
     cam.end();
-    
+   // fillLight.disable();
+   // landerLight.disable();
     glDepthMask(GL_FALSE);
     ofSetColor(255,100,90);
     //Makes everything glowy
@@ -458,6 +459,7 @@ void ofApp::draw() {
         //vbo.draw(GL_POINTS, 0, (int)explosion->sys->particles.size());
        // particleTex.unbind();
     }
+    landerLight.disable();
     cam.end();
     shader.end();
     ofDisablePointSprites();
@@ -603,10 +605,16 @@ void ofApp::keyPressed(int key) {
                 onBoardCamera = true;
             break;
     case '4':
-                if (topCamera)
-                    topCamera = false;
+            if (topCamera)
+                topCamera = false;
+            else
+                topCamera = true;
+            break;
+    case '5':
+                if (blanderLight)
+                    blanderLight = false;
                 else
-                    topCamera = true;
+                    blanderLight = true;
                 break;
     
     default:
@@ -732,13 +740,8 @@ bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
     float t2 = ofGetElapsedTimeMicros();
     //cout << "T2 " << t2  << endl;
     //cout << "Time to Select: " << t2 - t1 << " microseconds" << endl; // THIS IS COMMENTED OUT FOR THE VIDEO.
-    if (pointSelected) {
-        
-        //pointRet = octree.mesh.getVertex(selectedNode.points.at(0));
-    }
-    else{
+   
         altitude = rayPoint.y - rayDir.y;
-    }
     
     return pointSelected;
 }

@@ -107,10 +107,14 @@ class ofApp : public ofBaseApp{
         ofSoundPlayer backgroundSound;
     
         //Background
-    ofImage background;
+        ofImage background;
     
         //Lighting
-        ofLight keyLight, fillLight, rimLight;
+       
+    ofLight landerLight, backLight, effectLight;
+    bool blanderLight = false; // lander light can be toggled.
+
+        
     
         //Rotation
     bool bRotation;
