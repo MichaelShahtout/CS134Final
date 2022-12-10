@@ -426,12 +426,14 @@ void ofApp::draw() {
 
     // if point selected, draw a sphere
     //
+    /*
     if (pointSelected) {
         ofVec3f p = octree.mesh.getVertex(selectedNode.points[0]);
         ofVec3f d = p - cam.getPosition();
         ofSetColor(ofColor::lightGreen);
         ofDrawSphere(p, .02 * d.length());
     }
+     */
 
     ofPopMatrix();
     cam.end();
@@ -732,7 +734,7 @@ bool ofApp::raySelectWithOctree(ofVec3f &pointRet) {
     //cout << "Time to Select: " << t2 - t1 << " microseconds" << endl; // THIS IS COMMENTED OUT FOR THE VIDEO.
     if (pointSelected) {
         
-        pointRet = octree.mesh.getVertex(selectedNode.points.at(0));
+        //pointRet = octree.mesh.getVertex(selectedNode.points.at(0));
     }
     else{
         altitude = rayPoint.y - rayDir.y;
